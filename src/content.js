@@ -8,8 +8,11 @@ import "./index.css";
 
 class Main extends React.Component {
     render() {
+        // TODO(rdg) loading assets like the svg is a whole thing. Should figure out before adding icons or anything else.
         return (
-            <Frame head={[<link type="text/css" rel="stylesheet" href={chrome.runtime.getURL("/static/css/content.css")} ></link>]}> 
+            <Frame head={[
+                <link type="text/css" rel="stylesheet" href={chrome.runtime.getURL("/static/css/content.css")} />,
+                    ]}> 
                <FrameContextConsumer>
                {
                // Callback is invoked with iframe's window and document instances
