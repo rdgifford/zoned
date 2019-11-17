@@ -6,21 +6,36 @@ import Cleave from 'cleave.js/react'
 const RowCenter = styled.div`
   display: flex;
   justify-content: center;
+  flex-grow: 1;
 `
 const ColumnCenter = styled.div`
   display: flex;
   justify-content: center;
   flex-direction: column;
+  flex-grow: 1;
+`
+const SColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+`
+const RowRight = styled.div`
+  display: flex;
+  justify-content: flex-end;
 `
 const InputContainer = styled.div`
+  display: flex;
   padding: 5px;
+`
+const STable = styled.table`
+  width: 100%;
 `
 const percent = n => (n*100).toFixed(2) + "%"
 const dollars = n => "$" + n.toFixed(2)
 const SimpleTable = ({ matrix }) => {
-  console.log('matrix', matrix)
   return (
-    <table>
+    // TODO(rdg) this width isn't appearing set from either styled or the style prop
+    <STable>
       <tbody>
         {
           matrix.map((row, i) => (
@@ -32,7 +47,7 @@ const SimpleTable = ({ matrix }) => {
           ))
         }
       </tbody>
-    </table>
+    </STable>
   )
 }
 
@@ -150,23 +165,25 @@ const App = () => {
   // TODO(rdg) put in a hook
     return (
       <div className="App">
-        <RowCenter>
-          <InputContainer>
-            {"list price: "}
-            <NumberInput onChange={(_, v) => setListPrice(v)} />
-          </InputContainer>
-          <InputContainer>
-            {"projected rent ($/month): "}
-            <NumberInput onChange={(_, v) => setProjectedMonthlyRent(v)} />
-          </InputContainer>
-          <InputContainer>
-            {"state: "}
-            <Select
-              options={options}
-              onChange={setUsStateName}
-            />
-          </InputContainer>
-        </RowCenter>
+        <RowRight>
+          <SColumn>
+            <InputContainer>
+              {"list price: "}
+              <NumberInput onChange={(_, v) => setListPrice(v)} />
+            </InputContainer>
+            <InputContainer>
+              {"projected rent ($/month): "}
+              <NumberInput onChange={(_, v) => setProjectedMonthlyRent(v)} />
+            </InputContainer>
+            <InputContainer>
+              {"state: "}
+              <Select
+                options={options}
+                onChange={setUsStateName}
+              />
+            </InputContainer>
+          </SColumn>
+        </RowRight>
         <br/>
         <RowCenter>
           <ColumnCenter>
@@ -184,6 +201,7 @@ const App = () => {
               ['replacement reserve: ', dollars(replacementReserve), percent(replacementReservePercentage)],
               ['operating expenses: ', dollars(operatingExpenses), undefined],
               ['-', '-', '-'],
+              ['net monthly expenses: ', dollars(netExpenses / 12), undefined],
               ['net expenses: ', dollars(netExpenses), undefined],
               ['income: ', dollars(income), undefined],
               ['cash on cash: ', undefined, percent(cashOnCash)]
