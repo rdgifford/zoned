@@ -1,6 +1,31 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import styled from 'styled-components'
+
+const SDiv = styled.div`
+  display: flex;
+  justify-content: center;
+`
+const percent = n => (n*100).toFixed(2) + "%"
+const SimpleTable = ({ matrix }) => {
+  console.log('matrix', matrix)
+  return (
+    <table>
+      <tbody>
+        {
+          matrix.map((row, i) => (
+            <tr key={i}>
+            {
+              row.map((val, j) => <td key={`${i} ${j}`}>{val}</td>)
+            }
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  )
+}
 
 const states = [
   {
@@ -73,7 +98,7 @@ const NumberInput = (props) => {
       const int = parseInt(ev.target.value)
       props.onChange(int)
   })
-  return <input onChange={onChange}/>
+  return <input type="number" onChange={onChange}/>
 }
 const App = () => {
   const [listPrice, setListPrice] = React.useState(NaN)
@@ -89,7 +114,6 @@ const App = () => {
 
   const incomeTaxPercentage = usState ? usState.income_tax : NaN
   const incomeTax = fin(projectedIncome * incomeTaxPercentage)
-
   // property tax and income tax based on dropdown
   // TODO(rdg) vacancy rate, repairs, and replacement reserve based on input fields with stored values
   const vacancyRatePercentage = .07
@@ -128,16 +152,20 @@ const App = () => {
           options={options}
           onChange={setUsStateName}
         />
-        <div>mortgage: {mortgagePayments}</div>
-        <div>income tax (annual): {incomeTax} ({incomeTaxPercentage})</div>
-        <div>property tax (annual): {propertyTax} ({propertyTaxPercentage})</div>
-        <div>property insurance (annual): {propertyInsurance} ({propertyInsurancePercentage})</div>
-        <div>vacancy rate (annual): {vacancyRate} ({vacancyRatePercentage})</div>
-        <div>repairs (annual): {repairs} ({repairsPercentage})</div>
-        <div>replacement reserve (annual): {replacementReserve} ({replacementReservePercentage})</div>
-        <div>expenses (annual): {expenses}</div>
-        <div>income (annual): {income}</div>
-        <div>cash on cash (annual): {cashOnCash * 100}%</div>
+        <SDiv>
+          <SimpleTable matrix={[
+            ['mortgage: ', mortgagePayments, undefined],
+            ['income tax (annual): ', incomeTax, percent(incomeTaxPercentage)],
+            ['property tax (annual): ', propertyTax, percent(propertyTaxPercentage)],
+            ['property insurance (annual): ', propertyInsurance, percent(propertyInsurancePercentage)],
+            ['vacancy rate (annual): ', vacancyRate, percent(vacancyRatePercentage)],
+            ['repairs (annual): ', repairs, percent(repairsPercentage)],
+            ['replacement reserve (annual): ', replacementReserve, percent(replacementReservePercentage)],
+            ['expenses (annual): ', expenses, undefined],
+            ['income (annual): ', income, undefined],
+            ['cash on cash (annual): ', undefined, percent(cashOnCash)]
+          ]} />
+        </SDiv>
       </div>
     );
 }
