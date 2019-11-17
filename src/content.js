@@ -18,9 +18,7 @@ class Main extends React.Component {
                // Callback is invoked with iframe's window and document instances
                    ({document, window}) => {
                       // Render Children
-                        return (
-                            <App />
-                        )
+                      return <App />
                     }
                 }
                 </FrameContextConsumer>

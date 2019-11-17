@@ -1,13 +1,22 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 import styled from 'styled-components'
+import Cleave from 'cleave.js/react'
 
-const SDiv = styled.div`
+const RowCenter = styled.div`
   display: flex;
   justify-content: center;
 `
+const ColumnCenter = styled.div`
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+`
+const InputContainer = styled.div`
+  padding: 5px;
+`
 const percent = n => (n*100).toFixed(2) + "%"
+const dollars = n => "$" + n.toFixed(2)
 const SimpleTable = ({ matrix }) => {
   console.log('matrix', matrix)
   return (
@@ -88,23 +97,26 @@ const calculateMortgage = (principal, percentageRate, lengthOfLoan) => {
   return (principal * percentageRate) / (1 - (Math.pow((1 + percentageRate) , lengthOfLoan * -1)));
 }
 const fin = n => +(n.toFixed(2))
-const useMortgagePayments = (listPrice) => {
-  let mortgagePayments = calculateMortgage(listPrice, .035 / 12, 30 * 12)
-  // make sure to round to two places and return as number
-  return fin(mortgagePayments);
-}
 const NumberInput = (props) => {
-  const onChange = React.useCallback((ev) => {
-      const int = parseInt(ev.target.value)
-      props.onChange(int)
-  })
-  return <input type="number" onChange={onChange}/>
+  return (
+    <Cleave 
+      options={{
+        numeral: true,
+        numeralThousandsGroupStyle: 'thousand'
+      }}
+      onChange={ev => props.onChange(ev, ev.target.rawValue)}
+    />
+  )
 }
 const App = () => {
   const [listPrice, setListPrice] = React.useState(NaN)
   const [projectedMonthlyRent, setProjectedMonthlyRent] = React.useState(NaN)
   const [usStateName, setUsStateName] = React.useState('')
-  const mortgagePayments = useMortgagePayments(listPrice)
+
+  const mortgageRate = .035
+  const mortgageLengthYears = 30
+  const mortgagePayments = fin(calculateMortgage(listPrice, mortgageRate / 12, mortgageLengthYears * 12))
+  const mortgage = mortgagePayments * 12
 
   const projectedIncome = projectedMonthlyRent*12
   const usState = statesMap[usStateName]
@@ -128,8 +140,9 @@ const App = () => {
   const propertyInsurancePercentage = .005
   const propertyInsurance = fin(listPrice * propertyInsurancePercentage)
   
-  const expenses = fin(incomeTaxPercentage + propertyTaxPercentage + propertyInsurance + vacancyRate + repairs + replacementReserve)
-  const income = fin(projectedIncome - expenses)
+  const operatingExpenses = fin(incomeTax + propertyTax + propertyInsurance + vacancyRate + repairs + replacementReserve)
+  const netExpenses = operatingExpenses + mortgage
+  const income = fin(projectedIncome - netExpenses)
   const downPayment = listPrice*.2
   const cashOnCash = fin(income / downPayment)
 
@@ -137,35 +150,46 @@ const App = () => {
   // TODO(rdg) put in a hook
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-        <div>list price</div>
-        <NumberInput onChange={setListPrice} />
-        <div>projected rent ($/month)</div>
-        <NumberInput onChange={setProjectedMonthlyRent} />
-        <Select
-          options={options}
-          onChange={setUsStateName}
-        />
-        <SDiv>
-          <SimpleTable matrix={[
-            ['mortgage: ', mortgagePayments, undefined],
-            ['income tax (annual): ', incomeTax, percent(incomeTaxPercentage)],
-            ['property tax (annual): ', propertyTax, percent(propertyTaxPercentage)],
-            ['property insurance (annual): ', propertyInsurance, percent(propertyInsurancePercentage)],
-            ['vacancy rate (annual): ', vacancyRate, percent(vacancyRatePercentage)],
-            ['repairs (annual): ', repairs, percent(repairsPercentage)],
-            ['replacement reserve (annual): ', replacementReserve, percent(replacementReservePercentage)],
-            ['expenses (annual): ', expenses, undefined],
-            ['income (annual): ', income, undefined],
-            ['cash on cash (annual): ', undefined, percent(cashOnCash)]
-          ]} />
-        </SDiv>
+        <RowCenter>
+          <InputContainer>
+            {"list price: "}
+            <NumberInput onChange={(_, v) => setListPrice(v)} />
+          </InputContainer>
+          <InputContainer>
+            {"projected rent ($/month): "}
+            <NumberInput onChange={(_, v) => setProjectedMonthlyRent(v)} />
+          </InputContainer>
+          <InputContainer>
+            {"state: "}
+            <Select
+              options={options}
+              onChange={setUsStateName}
+            />
+          </InputContainer>
+        </RowCenter>
+        <br/>
+        <RowCenter>
+          <ColumnCenter>
+            <div>Figures are annual unless otherwise noted.</div>
+            <br />
+            <SimpleTable matrix={[
+              ['monthly mortgage payment: ', dollars(mortgagePayments), percent(mortgageRate / 12)],
+              ['mortgage: ', dollars(mortgage), percent(mortgageRate)],
+              ['-', '-', '-'],
+              ['income tax: ', dollars(incomeTax), percent(incomeTaxPercentage)],
+              ['property tax: ', dollars(propertyTax), percent(propertyTaxPercentage)],
+              ['property insurance: ', dollars(propertyInsurance), percent(propertyInsurancePercentage)],
+              ['vacancy rate: ', dollars(vacancyRate), percent(vacancyRatePercentage)],
+              ['repairs: ', dollars(repairs), percent(repairsPercentage)],
+              ['replacement reserve: ', dollars(replacementReserve), percent(replacementReservePercentage)],
+              ['operating expenses: ', dollars(operatingExpenses), undefined],
+              ['-', '-', '-'],
+              ['net expenses: ', dollars(netExpenses), undefined],
+              ['income: ', dollars(income), undefined],
+              ['cash on cash: ', undefined, percent(cashOnCash)]
+            ]} />
+          </ColumnCenter>
+        </RowCenter>
       </div>
     );
 }
