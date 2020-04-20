@@ -1,4 +1,4 @@
-/*global chrome*/
+/* global chrome */
 /* src/content.js */
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -6,9 +6,13 @@ import Frame, { FrameContextConsumer }from 'react-frame-component';
 import App from './App';
 import "./index.css";
 
+// content.js is the content script for the extension:
+// https://developer.chrome.com/extensions/content_scripts
 class Main extends React.Component {
     render() {
         // TODO(rdg) loading assets like the svg is a whole thing. Should figure out before adding icons or anything else.
+        // Using an iframe isolates styles and events in the extension:
+        // https://stackoverflow.com/questions/12783217/how-to-really-isolate-stylesheets-in-the-google-chrome-extension 
         return (
             <Frame head={[
                 <link type="text/css" rel="stylesheet" href={chrome.runtime.getURL("/static/css/content.css")} />,
@@ -16,10 +20,7 @@ class Main extends React.Component {
                <FrameContextConsumer>
                {
                // Callback is invoked with iframe's window and document instances
-                   ({document, window}) => {
-                      // Render Children
-                      return <App />
-                    }
+                   () => <App />
                 }
                 </FrameContextConsumer>
             </Frame>
