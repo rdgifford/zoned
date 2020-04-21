@@ -2,6 +2,19 @@ import React from 'react';
 import styled from 'styled-components'
 import Cleave from 'cleave.js/react'
 
+const debounce = <F extends (...args: any[]) => any>(func: F, waitFor: number) => {
+  let timeout: any
+
+  return (...args: Parameters<F>): Promise<ReturnType<F>> =>
+    new Promise(resolve => {
+      if (timeout) {
+        clearTimeout(timeout)
+      }
+
+      timeout = setTimeout(() => resolve(func(...args)), waitFor)
+    })
+}
+
 const RowCenter = styled.div`
   display: flex;
   justify-content: center;
@@ -40,7 +53,9 @@ const SimpleTable = ({ matrix }: any) => {
           matrix.map((row: any, i: any) => (
             <tr key={i}>
             {
-              row.map((val: any, j: any) => <td key={`${i} ${j}`}>{val}</td>)
+              row.map((val: any, j: any) => {
+                return (<td key={`${i} ${j}`}>{val}</td>)
+              })
             }
             </tr>
           ))
@@ -122,14 +137,38 @@ const NumberInput = (props: any) => {
     />
   )
 }
+const PercentInput = (props: any) => {
+  return (
+    <Cleave 
+      options={{
+        numeral: true,
+        numeralDecimalScale: 4,
+        numeralPositiveOnly: true,
+        numeralThousandsGroupStyle: 'none',
+      }}
+      className={props.className}
+      value={props.value}
+      onChange={(ev: any) => {
+        if (props.className === ev.currentTarget.className) {
+          props.onChange(ev, ev.currentTarget.value)
+        }
+        ev.stopPropagation();
+      }}
+    />
+  )
+}
 const App = () => {
   const [listPrice, setListPrice] = React.useState(NaN)
   const [projectedMonthlyRent, setProjectedMonthlyRent] = React.useState(NaN)
   const [usStateName, setUsStateName] = React.useState('')
+  // 3.5 percent default
+  const [annualMortgageInterestRate, setAnnualMortgageInterestRate] = React.useState(.035)
+  // 20 percent downpayment
+  const [downpaymentPercentage, setDownpaymentPercentage] = React.useState(.20);
 
-  const mortgageRate = .035
+  const downpayment = listPrice*downpaymentPercentage
   const mortgageLengthYears = 30
-  const mortgagePayments = fin(calculateMortgage(listPrice, mortgageRate / 12, mortgageLengthYears * 12))
+  const mortgagePayments = fin(calculateMortgage(listPrice - downpayment, annualMortgageInterestRate / 12, mortgageLengthYears * 12))
   const mortgage = mortgagePayments * 12
 
   const projectedIncome = projectedMonthlyRent*12
@@ -157,9 +196,9 @@ const App = () => {
   const operatingExpenses = fin(incomeTax + propertyTax + propertyInsurance + vacancyRate + repairs + replacementReserve)
   const netExpenses = operatingExpenses + mortgage
   const income = fin(projectedIncome - netExpenses)
-  const downPayment = listPrice*.2
-  const cashOnCash = fin(income / downPayment)
+  const cashOnCash = fin(income / downpayment)
 
+  const debouncedSetAnnualMortgageInterestRate = React.useMemo(() => debounce(setAnnualMortgageInterestRate, 200), [setAnnualMortgageInterestRate])
   const options = states.map(({ abbr }) => ({ key: abbr, value: abbr }))
   // TODO(rdg) put in a hook
     return (
@@ -189,8 +228,15 @@ const App = () => {
             <div>Figures are annual unless otherwise noted.</div>
             <br />
             <SimpleTable matrix={[
-              ['monthly mortgage payment: ', dollars(mortgagePayments), percent(mortgageRate / 12)],
-              ['mortgage: ', dollars(mortgage), percent(mortgageRate)],
+              ['monthly mortgage payment: ', dollars(mortgagePayments), <PercentInput className='month' value={annualMortgageInterestRate/12} onChange={(_: any, v: any) => {
+                debouncedSetAnnualMortgageInterestRate(v*12)
+              }}/>],
+              ['mortgage: ', dollars(mortgage), <PercentInput className='year' value={annualMortgageInterestRate} onChange={(_: any, v: any) => {
+                debouncedSetAnnualMortgageInterestRate(v)
+              }}/>],
+              ['downpayment: ', dollars(downpayment), <PercentInput className='downpayment' value={downpaymentPercentage} onChange={(_: any, v: any) => {
+                setDownpaymentPercentage(v)
+              }}/>],
               ['-', '-', '-'],
               ['income tax: ', dollars(incomeTax), percent(incomeTaxPercentage)],
               ['property tax: ', dollars(propertyTax), percent(propertyTaxPercentage)],
