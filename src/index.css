@@ -20,3 +20,11 @@ body {
   height: 100%;
   border: none;
 }
+
+.my-extension{
+    padding: 20px;
+}
+
+.my-extension h1{
+    color: #000;
+}

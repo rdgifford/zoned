@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom';
 import Frame, { FrameContextConsumer }from 'react-frame-component';
 import App from './App';
 import "./index.css";
+import { StyleSheetManager } from 'styled-components';
 
 // content.js is the content script for the extension:
 // https://developer.chrome.com/extensions/content_scripts
@@ -16,13 +17,14 @@ class Main extends React.Component {
         return (
             <Frame head={[
                 <link type="text/css" rel="stylesheet" href={chrome.runtime.getURL("/static/css/content.css")} />,
-                    ]}> 
+              ]}> 
                <FrameContextConsumer>
-               {
-               // Callback is invoked with iframe's window and document instances
-                   () => <App />
-                }
-                </FrameContextConsumer>
+                { frameContext => (
+                  <StyleSheetManager target={frameContext.document.head}>
+                    <App />
+                  </StyleSheetManager>
+                )}
+              </FrameContextConsumer>
             </Frame>
         )
     }

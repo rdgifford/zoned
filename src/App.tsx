@@ -1,5 +1,4 @@
 import React from 'react';
-import './App.css';
 import styled from 'styled-components'
 import Cleave from 'cleave.js/react'
 
@@ -30,18 +29,18 @@ const InputContainer = styled.div`
 const STable = styled.table`
   width: 100%;
 `
-const percent = n => (n*100).toFixed(2) + "%"
-const dollars = n => "$" + n.toFixed(2)
-const SimpleTable = ({ matrix }) => {
+const percent = (n: number) => (n*100).toFixed(2) + "%"
+const dollars = (n: number) => "$" + n.toFixed(2)
+const SimpleTable = ({ matrix }: any) => {
   return (
     // TODO(rdg) this width isn't appearing set from either styled or the style prop
     <STable>
       <tbody>
         {
-          matrix.map((row, i) => (
+          matrix.map((row: any, i: any) => (
             <tr key={i}>
             {
-              row.map((val, j) => <td key={`${i} ${j}`}>{val}</td>)
+              row.map((val: any, j: any) => <td key={`${i} ${j}`}>{val}</td>)
             }
             </tr>
           ))
@@ -89,30 +88,30 @@ const states = [
     'property_tax': .0077
   }
 ]
-const statesMap = states.reduce((prev, curr) => {
+const statesMap = states.reduce((prev: any, curr: any) => {
   prev[curr.abbr] = curr
   return prev
 }, {})
 console.log(statesMap)
 
 // options: {key: string, value: string}[], onChange: string => void
-const Select = ({ options, onChange }) => {
+const Select = ({ options, onChange }: any) => {
   return (
     <select onChange={ev => onChange(ev.target.value)}>
       <option value={''} key={-1}>{''}</option>
       {
-        options.map(({ key, value }, i) => (
+        options.map(({ key, value }: any, i: number) => (
           <option value={value} key={i}>{key}</option>
         ))
       }
     </select>
   )
 }
-const calculateMortgage = (principal, percentageRate, lengthOfLoan) => {
+const calculateMortgage = (principal: any, percentageRate: any, lengthOfLoan: any) => {
   return (principal * percentageRate) / (1 - (Math.pow((1 + percentageRate) , lengthOfLoan * -1)));
 }
-const fin = n => +(n.toFixed(2))
-const NumberInput = (props) => {
+const fin = (n: number) => +(n.toFixed(2))
+const NumberInput = (props: any) => {
   return (
     <Cleave 
       options={{
@@ -169,11 +168,11 @@ const App = () => {
           <SColumn>
             <InputContainer>
               {"list price: "}
-              <NumberInput onChange={(_, v) => setListPrice(v)} />
+              <NumberInput onChange={(_: any, v: any) => setListPrice(v)} />
             </InputContainer>
             <InputContainer>
               {"projected rent ($/month): "}
-              <NumberInput onChange={(_, v) => setProjectedMonthlyRent(v)} />
+              <NumberInput onChange={(_: any, v: any) => setProjectedMonthlyRent(v)} />
             </InputContainer>
             <InputContainer>
               {"state: "}
