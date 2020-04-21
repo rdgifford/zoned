@@ -1,3 +1,3 @@
-- use typescript
+x use typescript
 - use react-table
 - allow editing down payment percentage and mortgage interest rate
