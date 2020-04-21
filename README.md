@@ -1,21 +1,5 @@
-# React Chrome Extension
-We have open sourced the boilerplate of chrome extension with ReactJs using inject page strategy. Read [detailed blog](https://medium.com/@satendra02/create-chrome-extension-with-reactjs-using-inject-page-strategy-137650de1f39)
-
-
-The boilerplate is to quickly create a chrome extension using ReactJs, The motivation behind creating a boilerplate was:
-1. Instead of chrome's ready-made popup, We wanted our own page injected into DOM as a sidebar for better UX.
-
-2. We wanted to use ReactJs for the Component-based approach, Routing, and its build mechanism.
-
-3. We need to make sure that the extension CSS should not conflict with the host page styles in any case.
-
-
-## Features
-
-- Used ReactJs to write chrome extension
-- Injecting extension to host page as content script
-- Utilized the Chrome messaging API
-- Isolated extension CSS using Iframe
+# Project Details
+This repo was cloned from [this repo](https://github.com/satendra02/react-chrome-extension), which accompanies this [blog post](https://itnext.io/create-chrome-extension-with-reactjs-using-inject-page-strategy-137650de1f39). Getting a recent version of create-react-app to work with the boilerplate from this repo was a bit tricky, but luckily [this issue](https://github.com/satendra02/react-chrome-extension/issues/2) pointed me in the right direction.
 
 ## Installation
 >Make sure you have latest **NodeJs** version installed
@@ -47,12 +31,3 @@ Now click on the `LOAD UNPACKED` and browse to `[PROJECT_HOME]\build` ,This wil
 When you go to any website and click on extension icon, injected page will toggle.
 
 <img src="https://cdn-images-1.medium.com/max/1600/1*bXJYfvrcHDWKwUZCrPI-8w.png" />
-
-## Contributing
-
-Bug reports and pull requests are welcome on GitHub at https://github.com/satendra02/react-chrome-extension/. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
-
-
-## License
-
-The repo is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
