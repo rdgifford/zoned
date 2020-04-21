@@ -5,6 +5,8 @@ import ReactDOM from 'react-dom';
 import Frame, { FrameContextConsumer }from 'react-frame-component';
 import App from './App';
 import "./index.css";
+// style sheet manager injects styled components into iframe
+// http://stephenhaney.com/using-styled-components-iframes-react/
 import { StyleSheetManager } from 'styled-components';
 
 // content.js is the content script for the extension:

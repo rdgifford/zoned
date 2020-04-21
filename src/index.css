@@ -1,3 +1,5 @@
+/* this style sheet is loaded before the iframe containing the extension and co-exists with all styles on the page
+   so be smart with it, keep it brief */
 body {
   margin: 0;
   padding: 0;
